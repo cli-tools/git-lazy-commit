@@ -5,7 +5,7 @@
 ```
 git status .
 git lazy-commit .
-``
+```
 
 ## Install
 
