@@ -1,0 +1,32 @@
+#!/bin/bash
+# shellcheck disable=2086,2046
+
+set -e
+
+verbose() {
+	#echo "+ $*"
+	PAGER="" "$@"
+}
+
+git status -s "$@" | grep -e "^[AMDR ][AMDR ] " | while read -r LINE
+do
+	set $LINE
+	case $1 in
+		A) VERB=Add
+			;;
+		M) VERB=Modify
+			;;
+		D) VERB=Delete
+			;;
+		R) VERB=Rename
+			FROM=$2
+			TO=$4
+			;;
+	esac
+	if [ "$VERB" = Rename ]; then
+		verbose git commit --status -m "$VERB $FROM -> $TO" "$FROM" "$TO"
+	else
+		set "$(basename "$2")" "$2"
+		verbose git commit --status -m "$VERB $1" "$2"
+	fi
+done
